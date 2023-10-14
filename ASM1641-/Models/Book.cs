@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Http;
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
 
-namespace BookStore.Models
+namespace ASM1641_.Models
 {
 	public class Book
 	{
