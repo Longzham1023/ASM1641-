@@ -35,11 +35,6 @@ namespace BookStore.Services
                 .ToListAsync();
         }
 
-        public Task<IEnumerable<Category>> GetAllCategories()
-        {
-            throw new NotImplementedException();
-        }
-
         public async Task<Category> GetByID(string id)
         {
             return await _CategoriesCollection.Find(e => e.Id == id).FirstOrDefaultAsync();

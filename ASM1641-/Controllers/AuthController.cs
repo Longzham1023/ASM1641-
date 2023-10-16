@@ -54,29 +54,26 @@ namespace ASM1641_.Controllers
         }
 
 
-        // GET api/<ValuesController>/5
-        [HttpGet("{id}")]
-        public string Get(int id)
+        [HttpGet("current")]
+        public async Task<IActionResult> GetCurrent()
         {
-            return "value";
-        }
+            try
+            {
+                string token = HttpContext.Request.Headers["Authorization"].FirstOrDefault()?.Split(" ").Last()!;
 
-        // POST api/<ValuesController>
-        [HttpPost]
-        public void Post([FromBody] string value)
-        {
-        }
 
-        // PUT api/<ValuesController>/5
-        [HttpPut("{id}")]
-        public void Put(int id, [FromBody] string value)
-        {
-        }
+                if (string.IsNullOrEmpty(token))
+                {
+                    return BadRequest($"Invalid token!");
+                }
 
-        // DELETE api/<ValuesController>/5
-        [HttpDelete("{id}")]
-        public void Delete(int id)
-        {
+                var customer = await _authService.GetCurrentUser(token);
+                return Ok(customer);
+            }
+            catch (Exception e)
+            {
+                return BadRequest($"Error: {e}");
+            }
         }
     }
 }

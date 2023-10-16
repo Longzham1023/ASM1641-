@@ -4,7 +4,7 @@ namespace ASM1641_.IService
 {
     public interface ICategoryService
     {
-        Task<IEnumerable<Category>> GetAllCategories();
+        Task<IEnumerable<Category>> GetAllCategories(int pageSize, int pageNumber);
         Task<Category> GetByID(string id);
         Task CreateCategory(Category category);
         Task RemoveCategory(string Id);

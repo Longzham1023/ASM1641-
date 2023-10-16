@@ -23,18 +23,17 @@ namespace BookStore.Services
             _bookCollection = mongoDatabase.GetCollection<Book>(this._dbSettings.Value.BooksCollection);
             _authorCollection = mongoDatabase.GetCollection<Author>(this._dbSettings.Value.AuthorCollection);
         }
-
         public async Task<IEnumerable<Book>> GetBooks(int pageSize, int pageNumber)
         {
-            int skip = (pageNumber - 1) * pageSize;
-
-            return await _bookCollection.Find(_ => true)
-                .Skip(skip)
-                .Limit(pageSize)
-                .ToListAsync();
+            int skip = pageSize * (pageNumber - 1);
+            return await _bookCollection.Find(e => true)
+                 .Skip(skip)
+                 .Limit(pageSize)
+                 .ToListAsync();
         }
+     
 
-        public async Task<Book> GetbyID(string id)
+        public async Task<Book> GetByID(string id)
         {
             return await _bookCollection.Find(e => e.Id == id).FirstOrDefaultAsync();
         }
@@ -103,8 +102,8 @@ namespace BookStore.Services
         {
             await _bookCollection.DeleteOneAsync(e => e.Id == Id);
         }
-     
-        public async Task AddCategorytoBook(string bookId, string categoryId)
+       
+        public async Task AddCategoryToBook(string bookId, string categoryId)
         {
             var filter = Builders<Book>.Filter.Eq("Id", bookId);
             var book = await _bookCollection.Find(filter).FirstOrDefaultAsync();
@@ -127,7 +126,7 @@ namespace BookStore.Services
                 }
             }
         }
-    
+      
         public async Task<IEnumerable<Book>> SearchBook(string bookName, int pageSize, int pageNumber)
         {
             int skip = (pageNumber - 1) * pageSize;
@@ -139,6 +138,7 @@ namespace BookStore.Services
                 .Limit(pageSize)
                 .ToListAsync();
         }
+      
 
         public async Task<IEnumerable<Book>> GetBookByCategory(string aCategory, int pageSize, int pageNumber)
         {
@@ -166,7 +166,7 @@ namespace BookStore.Services
 
         }
 
-
+       
     }
 }
 

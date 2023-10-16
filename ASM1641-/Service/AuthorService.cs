@@ -54,9 +54,9 @@ namespace ASM1641_.Service
         }
 
 
-        public async Task<IEnumerable<Author>> GetAllAuthors(int pageSize, int pageNumber)
+        public async Task<IEnumerable<Author>> GetAllAuthors()
         {
-            if (pageSize <= 0)
+          /*if (pageSize <= 0)
             {
                 throw new ArgumentException("pageSize must be greater than zero.");
             }
@@ -72,6 +72,8 @@ namespace ASM1641_.Service
                 .Skip(skip)
                 .Limit(pageSize)
                 .ToListAsync();
+        */
+            return await _authorCollection.FindSync(e => true).ToListAsync();
         }
 
 

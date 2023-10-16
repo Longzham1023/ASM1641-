@@ -4,10 +4,13 @@ namespace ASM1641_.IService
 {
     public interface IBookService
     {
-        Task<IEnumerable<Book>> GetAllCategories(int pageSize, int pageNumber);
-        Task<Book> GetbyID(string id);
-        Task CreateCategory(Category category);
-        Task UpdateCategory(string name, string categoryId);
-        Task RemoveCategory(string Id);
+        Task<IEnumerable<Book>> GetBooks(int pageSize, int pageNumber);
+        Task<Book> GetByID(string id);
+        Task CreateBook(Book aBook, IWebHostEnvironment hostingEnvironment);
+        Task UpdateBook(Book aBook, string Id);
+        Task RemoveBook(string Id);
+        Task AddCategoryToBook(string bookId, string categoryId);
+        Task<IEnumerable<Book>> SearchBook(string bookName, int pageSize, int pageNumber);
+        Task<IEnumerable<Book>> GetBookByCategory(string aCategory, int pageSize, int pageNumber);
     }
 }
