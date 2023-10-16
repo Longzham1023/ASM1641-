@@ -1,4 +1,4 @@
-﻿namespace BookStore.Models;
+﻿namespace ASM1641_.Models;
 
 public class ErrorViewModel
 {

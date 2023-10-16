@@ -1,9 +1,9 @@
 ﻿using System;
 using MongoDB.Driver;
-using BookStore.Models;
+using ASM1641_.Models;
 using Microsoft.Extensions.Options;
-using BookStore.Data;
-using BookStore.IServices;
+using ASM1641_.Data;
+using ASM1641_.IService;
 
 namespace BookStore.Services
 {
@@ -22,27 +22,42 @@ namespace BookStore.Services
 		}
 
         public async Task CreateCategory(Category aCategory)
-            => await _CategoriesCollection.InsertOneAsync(aCategory);
+        {
+            await _CategoriesCollection.InsertOneAsync(aCategory);
+        }
 
-        public async Task<IEnumerable<Category>> GetAllCategories()
-            => await _CategoriesCollection.FindSync(e => true).ToListAsync();
+        public async Task<IEnumerable<Category>> GetAllCategories(int pageSize, int pageNumber)
+        {
+            int skip = (pageNumber - 1) * pageSize;
+            return await _CategoriesCollection.Find(_ => true)
+                .Skip(skip)
+                .Limit(pageSize)
+                .ToListAsync();
+        }
+
+        public Task<IEnumerable<Category>> GetAllCategories()
+        {
+            throw new NotImplementedException();
+        }
 
         public async Task<Category> GetByID(string id)
-            => await _CategoriesCollection.FindSync(e => e.Id == id).FirstOrDefaultAsync();
+        {
+            return await _CategoriesCollection.Find(e => e.Id == id).FirstOrDefaultAsync();
+        }
+
+      
 
         public async Task RemoveCategory(string Id)
-            => await _CategoriesCollection.FindOneAndDeleteAsync(e => e.Id == Id);
-
+        {
+            await _CategoriesCollection.DeleteOneAsync(e => e.Id == Id);
+        }
+       
         public async Task UpdateCategory(string name, string categoryId)
         {
-            var categoryFilter = Builders<Category>.Filter.Eq("Id", categoryId);
-            var category = await _CategoriesCollection.Find(categoryFilter).FirstOrDefaultAsync();
+            var categoryFilter = Builders<Category>.Filter.Eq(e => e.Id, categoryId);
+            var updateDefinition = Builders<Category>.Update.Set(e => e.Name, name);
 
-            if (category != null)
-            {
-                category.Name = name;
-                await _CategoriesCollection.ReplaceOneAsync(categoryFilter, category);
-            }
+            await _CategoriesCollection.UpdateOneAsync(categoryFilter, updateDefinition);
         }
 
     }

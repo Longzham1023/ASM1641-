@@ -1,5 +1,5 @@
 ﻿using System;
-namespace BookStore.Data
+namespace ASM1641_.Data
 {
 	public class DatabaseSetting
 	{

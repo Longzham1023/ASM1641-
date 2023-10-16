@@ -1,8 +1,9 @@
 ﻿using System;
-using BookStore.Data;
-using BookStore.IServices;
-using BookStore.Models;
+using ASM1641_.Data;
+using ASM1641_.IService;
+using ASM1641_.Models;
 using Microsoft.Extensions.Options;
+using MongoDB.Bson;
 using MongoDB.Driver;
 
 namespace BookStore.Services
@@ -23,15 +24,23 @@ namespace BookStore.Services
             _authorCollection = mongoDatabase.GetCollection<Author>(this._dbSettings.Value.AuthorCollection);
         }
 
-        public async Task<IEnumerable<Book>> GetBooks()
+        public async Task<IEnumerable<Book>> GetBooks(int pageSize, int pageNumber)
         {
-            return await _bookCollection.Find(e => true).ToListAsync();
+            int skip = (pageNumber - 1) * pageSize;
+
+            return await _bookCollection.Find(_ => true)
+                .Skip(skip)
+                .Limit(pageSize)
+                .ToListAsync();
         }
 
-        public async Task<Book> GetByID(string id)
+        public async Task<Book> GetbyID(string id)
         {
             return await _bookCollection.Find(e => e.Id == id).FirstOrDefaultAsync();
         }
+
+
+   
 
         public async Task CreateBook(Book aBook, IWebHostEnvironment hostingEnvironment)
         {
@@ -85,20 +94,17 @@ namespace BookStore.Services
         }
 
 
-
-
-
         public async Task UpdateBook(Book aBook, string Id)
         {
             await _bookCollection.ReplaceOneAsync(e => e.Id == Id, aBook);
         }
-
+     
         public async Task RemoveBook(string Id)
         {
             await _bookCollection.DeleteOneAsync(e => e.Id == Id);
         }
-
-        public async Task AddCategoryToBook(string bookId, string categoryId)
+     
+        public async Task AddCategorytoBook(string bookId, string categoryId)
         {
             var filter = Builders<Book>.Filter.Eq("Id", bookId);
             var book = await _bookCollection.Find(filter).FirstOrDefaultAsync();
@@ -121,14 +127,23 @@ namespace BookStore.Services
                 }
             }
         }
-
-        public async Task<IEnumerable<Book>> SearchBook(string bookName)
+    
+        public async Task<IEnumerable<Book>> SearchBook(string bookName, int pageSize, int pageNumber)
         {
-            return await _bookCollection.Find(e => e.Title.ToLower().Contains(bookName.ToLower())).ToListAsync();
+            int skip = (pageNumber - 1) * pageSize;
+
+            var filter = Builders<Book>.Filter.Regex(book => book.Title, new BsonRegularExpression(bookName, "i"));
+
+            return await _bookCollection.Find(filter)
+                .Skip(skip)
+                .Limit(pageSize)
+                .ToListAsync();
         }
 
-        public async Task<IEnumerable<Book>> GetBookByCategory(string aCategory)
+        public async Task<IEnumerable<Book>> GetBookByCategory(string aCategory, int pageSize, int pageNumber)
         {
+            int skip = (pageNumber - 1) * pageSize;
+            var filter = Builders<Book>.Filter.AnyIn(book => book.BookCategories, new[] { aCategory });
             var books = await _bookCollection.Find(e => true).ToListAsync();
 
             List<Book> bookList = new List<Book>();
@@ -144,8 +159,14 @@ namespace BookStore.Services
                 }
             }
 
-            return bookList;
+            return await _bookCollection.Find(filter)
+            .Skip(skip)
+            .Limit(pageSize)
+            .ToListAsync();
+
         }
+
+
     }
 }
 

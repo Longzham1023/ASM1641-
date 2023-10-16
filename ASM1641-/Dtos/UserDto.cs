@@ -1,7 +1,7 @@
 ﻿using System;
 using MongoDB.Bson.Serialization.Attributes;
 
-namespace BookStore.Dtos
+namespace ASM1641_.Dtos
 {
 	public class UserDto
 	{

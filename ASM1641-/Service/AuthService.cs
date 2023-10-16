@@ -1,16 +1,16 @@
 ﻿using System;
 using MongoDB.Driver;
-using BookStore.Models;
+using ASM1641_.Models;
+using ASM1641_.Dtos;
 using Microsoft.Extensions.Options;
-using BookStore.Data;
-using BookStore.IServices;
-using BookStore.Dtos;
+using ASM1641_.Data;
+using ASM1641_.IService;
 using System.Security.Claims;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using System.IdentityModel.Tokens.Jwt;
 
-namespace BookStore.Services
+namespace ASM1641_.Services
 {
 	public class AuthService : IAuthService
 	{
@@ -31,53 +31,18 @@ namespace BookStore.Services
 
         public async Task CreateUserAsync(Customer request)
         {
-            var userExist = await _customerCollection.Find(e => true).ToListAsync();
-            foreach(var e in userExist)
+            var existingUser = await _customerCollection.Find(e => e.Email == request.Email).FirstOrDefaultAsync();
+
+            if (existingUser != null)
             {
-                if (e.Email == request.Email)
-                {
-                    throw new Exception("This email has been existed!, please try another email...");
-                }
+                throw new Exception("This email has already been used. Please try another email.");
             }
 
-            string _passwordHash = BCrypt.Net.BCrypt.HashPassword(request.PasswordHash);
-            request.PasswordHash = _passwordHash;
+            string hashedPassword = BCrypt.Net.BCrypt.HashPassword(request.PasswordHash);
+            request.PasswordHash = hashedPassword;
+
             await _customerCollection.InsertOneAsync(request);
         }
-
-        public async Task<Customer> getCurrentUser(string token)
-        {
-            var tokenHandler = new JwtSecurityTokenHandler();
-
-            var tokenValidationParemeters = new TokenValidationParameters
-            {
-                ValidateIssuerSigningKey = true,
-                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration.GetSection("Application:Token").Value!)),
-                ValidateIssuer = false,
-                ValidateAudience = false
-            };
-
-            SecurityToken validatedToken;
-            var principal = tokenHandler.ValidateToken(token, tokenValidationParemeters, out validatedToken);
-
-            // access claims from the validated principal
-
-            var customerIdClaim = principal.FindFirst("customerId");
-            if(customerIdClaim != null)
-            {
-                string customerId = customerIdClaim.Value;
-
-                var customerFilter = Builders<Customer>.Filter.Eq("Id", customerId);
-                var customer = await _customerCollection.Find(customerFilter).FirstOrDefaultAsync();
-
-                return customer;
-            }
-            else
-            {
-                throw new Exception("User not found!");
-            }
-        }
-
         public async Task<string> LoginAsync(UserDto request)
         {
             var customersFilter = Builders<Customer>.Filter.Eq("Email", request.UserName);
@@ -88,17 +53,60 @@ namespace BookStore.Services
                 throw new Exception("User not found, please check your user name again!");
             }
 
-            if(!BCrypt.Net.BCrypt.Verify(request.Password, customer.PasswordHash))
+            if (!BCrypt.Net.BCrypt.Verify(request.Password, customer.PasswordHash))
             {
                 throw new Exception("Wrong password!");
             }
 
-            
+
 
             return customer.Email == "admin1@gmail.com" ? CreateToken(customer, "Admin") : CreateToken(customer, "User");
         }
 
-        private string CreateToken(Customer aCustomer, string role)
+        public async Task<Customer> GetCurrentUser(string token)
+        {
+            var principal = ValidateTokenAndGetPrincipal(token);
+
+            var customerIdClaim = principal.FindFirst("customerId");
+
+            if (customerIdClaim == null)
+            {
+                throw new Exception("User not found!");
+            }
+
+            string customerId = customerIdClaim.Value;
+            var customerFilter = Builders<Customer>.Filter.Eq("Id", customerId);
+            var customer = await _customerCollection.Find(customerFilter).FirstOrDefaultAsync();
+
+            if (customer == null)
+            {
+                throw new Exception("User not found!");
+            }
+
+            return customer;
+        }
+
+        private ClaimsPrincipal ValidateTokenAndGetPrincipal(string token)
+        {
+            var tokenHandler = new JwtSecurityTokenHandler();
+
+            var tokenValidationParameters = new TokenValidationParameters
+            {
+                ValidateIssuerSigningKey = true,
+                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Application:Token"])),
+                ValidateIssuer = false,
+                ValidateAudience = false
+            };
+
+            SecurityToken validatedToken;
+            var principal = tokenHandler.ValidateToken(token, tokenValidationParameters, out validatedToken);
+
+            return principal;
+        }
+        
+
+
+        public string CreateToken(Customer aCustomer, string role)
         {
             List<Claim> claims = new List<Claim>()
             {
@@ -123,6 +131,7 @@ namespace BookStore.Services
 
             return jwt;
         }
+
     }
 }
 
