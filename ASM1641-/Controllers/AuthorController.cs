@@ -21,10 +21,18 @@ namespace ASM1641_.Controllers
 
         [HttpGet]
         [AllowAnonymous]
-        public async Task<IActionResult> GetAllAuthors([FromBody] string pageSize, string pageNumber)
+        public async Task<IActionResult> GetAllAuthors([FromQuery] string page)
         {
-            var authors = await _authorService.GetAllAuthors(int.Parse(pageSize), int.Parse(pageNumber));
-            return Ok(authors);
+            try
+            {
+                var authors = await _authorService.GetAllAuthors(int.Parse(page));
+                return Ok(authors);
+            }
+            catch(Exception e)
+            {
+                return BadRequest(e);
+            }
+
         }
 
         [HttpGet("{id}")]

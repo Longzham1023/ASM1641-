@@ -3,6 +3,7 @@ using ASM1641_.Models;
 using ASM1641_.Data;
 using Microsoft.Extensions.Options;
 using MongoDB.Driver;
+using ASM1641_.Dtos;
 
 namespace ASM1641_.Service
 {
@@ -54,25 +55,28 @@ namespace ASM1641_.Service
         }
 
 
-        public async Task<IEnumerable<Author>> GetAllAuthors(int pageSize, int pageNumber)
+        public async Task<AuthorResult> GetAllAuthors(int pageNumber)
         {
-          if (pageSize <= 0)
-            {
-                throw new ArgumentException("pageSize must be greater than zero.");
-            }
 
             if (pageNumber <= 0)
             {
                 throw new ArgumentException("pageNumber must be greater than zero.");
             }
 
-            int skip = (pageNumber - 1) * pageSize;
+            int skip = (pageNumber - 1) * 10;
 
-            return await _authorCollection.Find(_ => true)
-                .Skip(skip)
-                .Limit(pageSize)
-                .ToListAsync();
-        
+            var totalAuthors = await _authorCollection.CountDocumentsAsync(_ => true);
+            var totalPages = (int)Math.Ceiling((double)totalAuthors / 10);
+
+            var authors = await _authorCollection.Find(_ => true).Skip(skip).Limit(10).ToListAsync();
+              
+
+            return new AuthorResult
+            {
+                page = pageNumber,
+                totalPages = totalPages,
+                authors = authors
+            };
         }
 
 
