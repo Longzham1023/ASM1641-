@@ -1,7 +1,12 @@
-var builder = WebApplication.CreateBuilder(args);
+using ASM1641_.Data;
+using ASM1641_.IService;
+using ASM1641_.Service;
 
+var builder = WebApplication.CreateBuilder(args);
+builder.Services.Configure<DatabaseSetting>(builder.Configuration.GetSection("MyDatabase"));
 // Add services to the container.
 builder.Services.AddControllersWithViews();
+builder.Services.AddTransient<IAuthorService, AuthorService>();
 
 var app = builder.Build();
 

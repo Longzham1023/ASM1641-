@@ -21,9 +21,9 @@ namespace ASM1641_.Controllers
 
         [HttpGet]
         [AllowAnonymous]
-        public async Task<IActionResult> GetAllAuthors()
+        public async Task<IActionResult> GetAllAuthors([FromBody] string pageSize, string pageNumber)
         {
-            var authors = await _authorService.GetAllAuthors();
+            var authors = await _authorService.GetAllAuthors(int.Parse(pageSize), int.Parse(pageNumber));
             return Ok(authors);
         }
 
@@ -114,3 +114,4 @@ namespace ASM1641_.Controllers
             return Ok("Added book to the author's list of books");
         }
     }
+}

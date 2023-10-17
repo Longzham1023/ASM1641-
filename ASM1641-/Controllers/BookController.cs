@@ -1,13 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
-using ASM1641_IService;
-using BookStore.Models;
+﻿using Microsoft.AspNetCore.Mvc;
+using ASM1641_.IService;
+using ASM1641_.Models;
 using Microsoft.AspNetCore.Authorization;
 
-namespace BookStore.Controllers
+namespace ASM1641_.Controllers
 {
     [Route("api/v1/book")]
     [Authorize]
@@ -23,9 +19,9 @@ namespace BookStore.Controllers
 
         // GET: api/book
         [HttpGet, AllowAnonymous]
-        public async Task<IActionResult> GetBooks()
+        public async Task<IActionResult> GetBooks([FromQuery] string pageSize, string pageNumber)
         {
-            var books = await _bookService.GetBooks();
+            var books = await _bookService.GetBooks(int.Parse(pageNumber), int.Parse(pageSize));
             return Ok(books);
         }
 
@@ -109,11 +105,11 @@ namespace BookStore.Controllers
 
         //GET: api/v1/book/getbyname
         [HttpGet("search-by-book-name"), AllowAnonymous]
-        public async Task<IActionResult> SearchByName([FromForm]string bookName)
+        public async Task<IActionResult> SearchByName([FromForm]string bookName, string pageSize, string pageNumber)
         {
             try
             {
-                var books = await _bookService.SearchBook(bookName);
+                var books = await _bookService.SearchBook(bookName, int.Parse(pageNumber), int.Parse(pageSize));
                 return Ok(books);
             }
             catch(Exception e)
@@ -124,11 +120,11 @@ namespace BookStore.Controllers
 
         //GET: api/v1/book/getByCategory
         [HttpGet("get-books-by-category/{categoryId}"), AllowAnonymous]
-        public async Task<IActionResult> SearchByCategory(string categoryId)
+        public async Task<IActionResult> SearchByCategory(string categoryId, string pageSize, string pageNumber)
         {
             try
             {
-                var books = await _bookService.GetBookByCategory(categoryId);
+                var books = await _bookService.GetBookByCategory(categoryId, int.Parse(pageNumber), int.Parse(pageSize));
                 return Ok(books);
             }catch(Exception e)
             {
