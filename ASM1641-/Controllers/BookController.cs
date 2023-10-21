@@ -2,6 +2,7 @@
 using ASM1641_.IService;
 using ASM1641_.Models;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace ASM1641_.Controllers
 {
@@ -19,9 +20,9 @@ namespace ASM1641_.Controllers
 
         // GET: api/book
         [HttpGet, AllowAnonymous]
-        public async Task<IActionResult> GetBooks([FromQuery] string pageSize, string pageNumber)
+        public async Task<IActionResult> GetBooks([FromQuery] string page)
         {
-            var books = await _bookService.GetBooks(int.Parse(pageNumber), int.Parse(pageSize));
+            var books = await _bookService.GetBooks(int.Parse(page));
             return Ok(books);
         }
 

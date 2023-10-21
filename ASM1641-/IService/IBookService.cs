@@ -1,10 +1,11 @@
-﻿using ASM1641_.Models;
+﻿using ASM1641_.Dtos;
+using ASM1641_.Models;
 
 namespace ASM1641_.IService
 {
     public interface IBookService
     {
-        Task<IEnumerable<Book>> GetBooks(int pageSize, int pageNumber);
+        Task<BookResult> GetBooks(int pageNumber);
         Task<Book> GetByID(string id);
         Task CreateBook(Book aBook, IWebHostEnvironment hostingEnvironment);
         Task UpdateBook(Book aBook, string Id);

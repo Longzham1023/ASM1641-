@@ -1,5 +1,6 @@
 ﻿using System;
 using ASM1641_.Data;
+using ASM1641_.Dtos;
 using ASM1641_.IService;
 using ASM1641_.Models;
 using Microsoft.Extensions.Options;
@@ -23,13 +24,27 @@ namespace BookStore.Services
             _bookCollection = mongoDatabase.GetCollection<Book>(this._dbSettings.Value.BooksCollection);
             _authorCollection = mongoDatabase.GetCollection<Author>(this._dbSettings.Value.AuthorCollection);
         }
-        public async Task<IEnumerable<Book>> GetBooks(int pageSize, int pageNumber)
+        public async Task<BookResult> GetBooks( int pageNumber)
         {
-            int skip = pageSize * (pageNumber - 1);
-            return await _bookCollection.Find(e => true)
-                 .Skip(skip)
-                 .Limit(pageSize)
-                 .ToListAsync();
+            if (pageNumber <= 0)
+            {
+                throw new ArgumentException("pageNumber must be greater than zero.");
+            }
+
+            int skip = (pageNumber - 1) * 10;
+
+            var totalBooks = await _bookCollection.CountDocumentsAsync(_ => true);
+            var totalPages = (int)Math.Ceiling((double)totalBooks / 10);
+
+            var books = await _bookCollection.Find(_ => true).Skip(skip).Limit(10).ToListAsync();
+
+
+            return new BookResult
+            {
+                page = pageNumber,
+                totalPages = totalPages,
+                books = books
+            };
         }
      
 
