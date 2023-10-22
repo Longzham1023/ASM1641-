@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace ASM1641_.Controllers
 {
-    [Route("api/v1/authors")]
+    [Route("api/v1/author")]
     [Authorize]
     public class AuthorController : ControllerBase
     {

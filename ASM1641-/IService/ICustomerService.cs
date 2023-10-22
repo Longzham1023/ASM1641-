@@ -1,4 +1,5 @@
-﻿using ASM1641_.Models;
+﻿using ASM1641_.Dtos;
+using ASM1641_.Models;
 
 namespace ASM1641_.IService
 {
@@ -10,7 +11,7 @@ namespace ASM1641_.IService
 
         Task<List<CartItems>> ViewCartUser(string CustomerId);
 
-        Task AddToCart(string CustomerId, string BookId, int quantity);
+        Task<CartDto> AddToCart(string CustomerId, string BookId, int quantity);
 
         Task UpdateCartUser(string customerId, string BookId, int quantity);
 

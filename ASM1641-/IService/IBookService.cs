@@ -11,7 +11,7 @@ namespace ASM1641_.IService
         Task UpdateBook(Book aBook, string Id);
         Task RemoveBook(string Id);
         Task AddCategoryToBook(string bookId, string categoryId);
-        Task<IEnumerable<Book>> SearchBook(string bookName, int pageSize, int pageNumber);
-        Task<IEnumerable<Book>> GetBookByCategory(string aCategory, int pageSize, int pageNumber);
+        Task<BookResult> SearchBook(string bookName, int pageNumber);
+        Task<BookResult> GetBookByCategory(string aCategory, int pageNumber);
     }
 }

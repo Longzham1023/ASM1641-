@@ -7,7 +7,7 @@ using Microsoft.Extensions.Options;
 using MongoDB.Bson;
 using MongoDB.Driver;
 
-namespace BookStore.Services
+namespace ASM1641_.Service
 {
     public class BookService : IBookService
     {
@@ -142,46 +142,47 @@ namespace BookStore.Services
             }
         }
       
-        public async Task<IEnumerable<Book>> SearchBook(string bookName, int pageSize, int pageNumber)
+        public async Task<BookResult> SearchBook(string bookName, int pageNumber)
         {
-            int skip = (pageNumber - 1) * pageSize;
+            int skip = (pageNumber - 1) * 10;
 
             var filter = Builders<Book>.Filter.Regex(book => book.Title, new BsonRegularExpression(bookName, "i"));
+            var totalBooks = await _bookCollection.CountDocumentsAsync(_ => true);
+            var totalPages = (int)Math.Ceiling((double)totalBooks / 10);
 
-            return await _bookCollection.Find(filter)
-                .Skip(skip)
-                .Limit(pageSize)
-                .ToListAsync();
-        }
-      
+            var results = await _bookCollection.Find(filter).Skip(skip).Limit(10).ToListAsync();
 
-        public async Task<IEnumerable<Book>> GetBookByCategory(string aCategory, int pageSize, int pageNumber)
-        {
-            int skip = (pageNumber - 1) * pageSize;
-            var filter = Builders<Book>.Filter.AnyIn(book => book.BookCategories, new[] { aCategory });
-            var books = await _bookCollection.Find(e => true).ToListAsync();
-
-            List<Book> bookList = new List<Book>();
-
-            foreach(var e in books)
+            return new BookResult()
             {
-                foreach (var cat in e.BookCategories)
-                {
-                    if (cat.ToString().Equals(aCategory))
-                    {
-                        bookList.Add(e);
-                    }
-                }
-            }
-
-            return await _bookCollection.Find(filter)
-            .Skip(skip)
-            .Limit(pageSize)
-            .ToListAsync();
-
+                page = pageNumber,
+                totalPages = totalPages,
+                books = results
+            };
         }
 
-       
+
+        public async Task<BookResult> GetBookByCategory(string aCategory, int pageNumber)
+        {
+            int pageSize = 10;
+            int skip = (pageNumber - 1) * pageSize;
+
+            var filter = Builders<Book>.Filter.AnyEq(book => book.BookCategories, aCategory);
+
+            var totalBooks = await _bookCollection.CountDocumentsAsync(filter);
+            var totalPages = (int)Math.Ceiling((double)totalBooks / pageSize);
+
+            var books = await _bookCollection.Find(filter).Skip(skip).Limit(pageSize).ToListAsync();
+
+            return new BookResult
+            {
+                page = pageNumber,
+                totalPages = totalPages,
+                books = books
+            };
+        }
+
+
+
     }
 }
 

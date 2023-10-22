@@ -6,7 +6,7 @@ using ASM1641_.Data;
 using ASM1641_.IService;
 using ASM1641_.Dtos;
 
-namespace ASM1641_.Services
+namespace ASM1641_.Service
 {
 	public class CategoryService : ICategoryService
 	{

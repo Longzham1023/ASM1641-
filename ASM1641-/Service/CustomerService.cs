@@ -1,4 +1,5 @@
 ﻿using ASM1641_.Data;
+using ASM1641_.Dtos;
 using ASM1641_.IService;
 using ASM1641_.Models;
 using Microsoft.Extensions.Options;
@@ -32,7 +33,7 @@ namespace ASM1641_.Service
         }
 
         //done
-        public async Task AddToCart(string CustomerId, string BookId, int quantity)
+        public async Task<CartDto> AddToCart(string CustomerId, string BookId, int quantity)
         {
             if (string.IsNullOrEmpty(CustomerId) || string.IsNullOrEmpty(BookId) || quantity <= 0)
             {
@@ -55,7 +56,7 @@ namespace ASM1641_.Service
 
             if (book == null)
             {
-                throw new Exception("Customer not found!");
+                throw new Exception("Book not found!");
 
             }
 
@@ -91,6 +92,7 @@ namespace ASM1641_.Service
                 item.BookId = book.Id;
                 item.Quantity = quantity;
                 item.Price = book.Price;
+                item.imagePath = book.ImagePath;
                 customer.CartItems.Add(item);
             }
 
@@ -98,6 +100,14 @@ namespace ASM1641_.Service
             // update CartItems current
 
             await _customerCollection.ReplaceOneAsync(customerFilter, customer);
+            return new CartDto()
+            {
+                id = item.BookId,
+                quantity = item.Quantity,
+                imagePath = item.imagePath,
+                message = "Added book to cart successfully!",
+                price = item.Price
+            };
         }
 
         public async Task CreateOrder(string customerId)

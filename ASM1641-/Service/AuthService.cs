@@ -10,7 +10,7 @@ using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using System.IdentityModel.Tokens.Jwt;
 
-namespace ASM1641_.Services
+namespace ASM1641_.Service
 {
 	public class AuthService : IAuthService
 	{

@@ -17,7 +17,7 @@ namespace ASM1641_.Controllers
 
 
         // GET: api/values
-        [HttpGet, Authorize(Roles = "Admin")]
+        [HttpGet, AllowAnonymous]
         public async Task<IActionResult> Get()
         {
             var publishers = await _publisherService.GetPublishers();
@@ -25,7 +25,7 @@ namespace ASM1641_.Controllers
         }
 
         // GET api/values/5
-        [HttpGet("{id}"), Authorize(Roles = "Admin")]
+        [HttpGet("{id}"), AllowAnonymous]
         public async Task<IActionResult> Get(string id)
         {
             var publisher = await _publisherService.GetByID(id);

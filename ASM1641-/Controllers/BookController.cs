@@ -106,11 +106,11 @@ namespace ASM1641_.Controllers
 
         //GET: api/v1/book/getbyname
         [HttpGet("search-by-book-name"), AllowAnonymous]
-        public async Task<IActionResult> SearchByName([FromForm]string bookName, string pageSize, string pageNumber)
+        public async Task<IActionResult> SearchByName([FromQuery]string page, string bookName)
         {
             try
             {
-                var books = await _bookService.SearchBook(bookName, int.Parse(pageNumber), int.Parse(pageSize));
+                var books = await _bookService.SearchBook(bookName, int.Parse(page));
                 return Ok(books);
             }
             catch(Exception e)
@@ -121,11 +121,11 @@ namespace ASM1641_.Controllers
 
         //GET: api/v1/book/getByCategory
         [HttpGet("get-books-by-category/{categoryId}"), AllowAnonymous]
-        public async Task<IActionResult> SearchByCategory(string categoryId, string pageSize, string pageNumber)
+        public async Task<IActionResult> SearchByCategory(string categoryId, [FromQuery]string page)
         {
             try
             {
-                var books = await _bookService.GetBookByCategory(categoryId, int.Parse(pageNumber), int.Parse(pageSize));
+                var books = await _bookService.GetBookByCategory(categoryId, int.Parse(page));
                 return Ok(books);
             }catch(Exception e)
             {

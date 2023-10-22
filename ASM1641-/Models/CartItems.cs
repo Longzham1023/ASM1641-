@@ -5,7 +5,8 @@ namespace ASM1641_.Models
 {
 	public class CartItems
 	{
-		[BsonElement("BookId")]
+
+        [BsonElement("BookId")]
 		[BsonRequired]
 		public string BookId { get; set; } = string.Empty;
 
@@ -15,6 +16,10 @@ namespace ASM1641_.Models
 
 		[BsonElement("Price")]
 		public decimal Price { get; set; }
-	}
+
+		[BsonElement("imagePath")]
+		public string imagePath { get; set; } = string.Empty;
+
+    }
 }
 
