@@ -3,6 +3,7 @@ using ASM1641_.IService;
 using ASM1641_.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using ASM1641_.Dtos;
 
 namespace ASM1641_.Controllers
 {
@@ -55,11 +56,11 @@ namespace ASM1641_.Controllers
 
         // PUT: api/book/5
         [HttpPut("{id}"), Authorize(Roles = "Admin")]
-        public async Task<IActionResult> UpdateBook(string id, [FromBody] Book book)
+        public async Task<IActionResult> UpdateBook(string id, [FromBody] BookDto book)
         {
             try
             {
-                await _bookService.UpdateBook(book, id);
+                await _bookService.UpdateBook(book, id, _webHostEnvironment);
                 return Ok("Book updated successfully!");
             }catch(Exception e)
             {

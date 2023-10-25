@@ -7,6 +7,7 @@ using Microsoft.IdentityModel.Tokens;
 using MongoDB.Bson;
 using MongoDB.Driver;
 using System.IdentityModel.Tokens.Jwt;
+using System.Linq;
 using System.Text;
 
 namespace ASM1641_.Service
@@ -142,12 +143,33 @@ namespace ASM1641_.Service
                     OrderItems = customer.CartItems,
                     customerId = customer.Id,
                     address = customer.Address,
-                    phoneNumber = customer.Phone
+                    phoneNumber = customer.Phone,
+                    status = "pending"
                 };
 
+                //update quantity
+
+                foreach (var item in order.OrderItems)
+                {
+                    var bookFilter = Builders<Book>.Filter.Eq(b => b.Id, item.BookId);
+                    var book = await _bookCollection.Find(bookFilter).FirstOrDefaultAsync();
+
+                    if (book != null)
+                    {
+
+                        book.quantity -= item.Quantity;
+                        await _bookCollection.ReplaceOneAsync(bookFilter, book);
+                    }
+                    else
+                    {
+                        // Handle the case where the book is not found in the database
+                        throw new Exception($"Error: Book with ID {item.BookId} not found!");
+                    }
+                }
                 await _orderCollection.InsertOneAsync(order);
                 customer.CartItems.Clear();
                 await _customerCollection.ReplaceOneAsync(customerFilter, customer);
+
             }
             else
             {

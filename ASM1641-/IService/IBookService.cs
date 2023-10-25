@@ -8,7 +8,7 @@ namespace ASM1641_.IService
         Task<BookResult> GetBooks(int pageNumber);
         Task<Book> GetByID(string id);
         Task CreateBook(Book aBook, IWebHostEnvironment hostingEnvironment);
-        Task UpdateBook(Book aBook, string Id);
+        Task UpdateBook(BookDto updatedBook, string bookId, IWebHostEnvironment hostingEnvironment);
         Task RemoveBook(string Id);
         Task AddCategoryToBook(string bookId, string categoryId);
         Task<BookResult> SearchBook(string bookName, int pageNumber);

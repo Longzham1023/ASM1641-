@@ -27,5 +27,8 @@ namespace ASM1641_.Models
 
         [BsonElement("Phone")]
         public string phoneNumber { get; set; } = string.Empty;
+
+        [BsonElement("Status")]
+        public string status { get; set; } = string.Empty;
     }
 }

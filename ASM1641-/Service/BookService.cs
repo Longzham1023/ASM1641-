@@ -54,51 +54,39 @@ namespace ASM1641_.Service
         }
 
 
-   
+
 
         public async Task CreateBook(Book aBook, IWebHostEnvironment hostingEnvironment)
         {
-            //check if the book is existing or not
-            var isExist = await _bookCollection.Find(e => e.Title.Equals(aBook.Title)).ToListAsync();
-            if (isExist != null)
-            {
-                throw new Exception("The book title has already existed!");
-            }
-
-            // Check if the 'aBook' object is null
             if (aBook == null)
             {
-                throw new Exception("The 'aBook' parameter cannot be null.");
+                throw new ArgumentNullException(nameof(aBook), "The 'aBook' parameter cannot be null.");
             }
 
-            // Check if the 'Image' property is null
             if (aBook.Image == null)
             {
-                throw new Exception("The 'Image' property cannot be null.");
+                throw new ArgumentNullException(nameof(aBook.Image), "The 'Image' property cannot be null.");
             }
 
             try
             {
-                // Get the wwwroot/images directory path
                 var uploadsPath = Path.Combine(hostingEnvironment.WebRootPath, "images");
 
-                // Create a unique file name (e.g., using a GUID)
-                var uniqueFileName = Guid.NewGuid().ToString() + "_" + aBook.Image.FileName;
+                if (!Directory.Exists(uploadsPath))
+                {
+                    Directory.CreateDirectory(uploadsPath);
+                }
 
-                // Combine the directory path with the unique file name to get the full file path
+                var uniqueFileName = Guid.NewGuid().ToString() + "_" + Path.GetFileName(aBook.Image.FileName);
                 var filePath = Path.Combine(uploadsPath, uniqueFileName);
 
-                // Save the file to the specified location
                 using (var stream = new FileStream(filePath, FileMode.Create))
                 {
                     await aBook.Image.CopyToAsync(stream);
                 }
 
-                // Update the 'ImagePath' property of 'aBook' with the relative path to the image file
                 aBook.ImagePath = "/images/" + uniqueFileName;
 
-                // Insert 'aBook' into the collection
-                // Note: Here, you should only insert the book information, not the image itself
                 await _bookCollection.InsertOneAsync(aBook);
             }
             catch (Exception ex)
@@ -108,11 +96,71 @@ namespace ASM1641_.Service
         }
 
 
-        public async Task UpdateBook(Book aBook, string Id)
+
+        public async Task UpdateBook(BookDto updatedBook, string bookId, IWebHostEnvironment hostingEnvironment)
         {
-            await _bookCollection.ReplaceOneAsync(e => e.Id == Id, aBook);
+            if (updatedBook == null)
+            {
+                throw new ArgumentNullException(nameof(updatedBook), "The 'updatedBook' parameter cannot be null.");
+            }
+
+            var bookFilter = Builders<Book>.Filter.Eq("Id", bookId);
+            var book = await _bookCollection.Find(bookFilter).FirstOrDefaultAsync();
+
+            if (book == null)
+            {
+                throw new Exception("Book not found!");
+            }
+
+            if (updatedBook.Image != null)
+            {
+                // Update the book's image if a new image is provided
+                try
+                {
+                    var uploadsPath = Path.Combine(hostingEnvironment.WebRootPath, "images");
+
+                    if (!Directory.Exists(uploadsPath))
+                    {
+                        Directory.CreateDirectory(uploadsPath);
+                    }
+
+                    var uniqueFileName = Guid.NewGuid().ToString() + "_" + Path.GetFileName(updatedBook.Image.FileName);
+                    var filePath = Path.Combine(uploadsPath, uniqueFileName);
+
+                    using (var stream = new FileStream(filePath, FileMode.Create))
+                    {
+                        await updatedBook.Image.CopyToAsync(stream);
+                    }
+
+                    book.ImagePath = "/images/" + uniqueFileName;
+                }
+                catch (Exception ex)
+                {
+                    throw new Exception("An error occurred while updating the book's image: " + ex.Message);
+                }
+            }
+
+            // Update the book details
+            try
+            {
+                book.Title = updatedBook.Title;
+                book.AuthorId = updatedBook.AuthorId;
+                book.Description = updatedBook.Description;
+                book.Price = updatedBook.Price;
+                book.PublishDate = updatedBook.PublishDate;
+                book.Publisher = book.Publisher;
+                book.BookCategories = updatedBook.BookCategories;
+                book.quantity = updatedBook.quantity;
+
+                await _bookCollection.ReplaceOneAsync(bookFilter, book);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("An error occurred while updating the book: " + ex.Message);
+            }
         }
-     
+
+
         public async Task RemoveBook(string Id)
         {
             await _bookCollection.DeleteOneAsync(e => e.Id == Id);

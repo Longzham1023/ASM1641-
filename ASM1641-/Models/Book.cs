@@ -23,10 +23,6 @@ namespace ASM1641_.Models
         [BsonRequired]
         public string PublishDate { get; set; } = string.Empty;
 
-        [BsonElement("Genre")]
-        [BsonRequired]
-        public string Genre { get; set; } = string.Empty;
-
         [BsonRepresentation(BsonType.ObjectId)]
         [BsonElement("AuthorId")]
         [BsonRequired]
@@ -49,6 +45,9 @@ namespace ASM1641_.Models
 
         [BsonElement("ImagePath")]
         public string ImagePath { get; set; } = string.Empty;
+
+        [BsonElement("Quantity")]
+        public int quantity { get; set; }
     }
 }
 
