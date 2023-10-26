@@ -18,6 +18,7 @@ builder.Services.AddTransient<IBookService, BookService>();
 builder.Services.AddTransient<IPublisherService, PublisherService>();
 builder.Services.AddTransient<IAuthService, AuthService>();
 builder.Services.AddTransient<ICustomerService, CustomerService>();
+builder.Services.AddTransient<IOrderService, OrderService>();
 
 // use authenticate
 

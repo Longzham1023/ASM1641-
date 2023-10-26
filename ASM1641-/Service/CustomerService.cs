@@ -94,6 +94,7 @@ namespace ASM1641_.Service
                 item.Quantity = quantity;
                 item.Price = book.Price;
                 item.imagePath = book.ImagePath;
+                item.BookName = book.Title;
                 customer.CartItems.Add(item);
             }
 

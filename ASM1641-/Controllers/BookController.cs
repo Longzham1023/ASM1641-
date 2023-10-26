@@ -56,7 +56,7 @@ namespace ASM1641_.Controllers
 
         // PUT: api/book/5
         [HttpPut("{id}"), Authorize(Roles = "Admin")]
-        public async Task<IActionResult> UpdateBook(string id, [FromBody] BookDto book)
+        public async Task<IActionResult> UpdateBook(string id, [FromForm] BookDto book)
         {
             try
             {

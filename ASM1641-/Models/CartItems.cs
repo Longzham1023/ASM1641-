@@ -10,6 +10,9 @@ namespace ASM1641_.Models
 		[BsonRequired]
 		public string BookId { get; set; } = string.Empty;
 
+		[BsonElement("BookName")]
+		public string BookName { get; set; } = string.Empty;
+
 		[BsonElement("Quantity")]
 		[BsonRequired]
 		public int Quantity { get; set; }
