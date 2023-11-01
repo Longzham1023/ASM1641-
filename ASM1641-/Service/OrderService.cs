@@ -21,15 +21,7 @@ namespace ASM1641_.Service
         }
         public async Task DeleteOrderAsync(string orderId)
         {
-            var order = Builders<Orders>.Filter.Eq("Id", orderId);
-            if(order != null)
-            {
-                await _orderCollection.DeleteOneAsync(order);
-            }
-            else
-            {
-                throw new Exception("Order Id not found!");
-            }
+            await _orderCollection.DeleteOneAsync(e => e.Id == orderId);
         }
 
         public async Task<OrderResult> GetAllOrdersAsync(int page)
