@@ -2,9 +2,10 @@
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
 
+
 namespace ASM1641_.Models
 {
-	public class Customer
+	public class Admin
 	{
         [BsonId]
         [BsonRepresentation(BsonType.ObjectId)]
@@ -14,28 +15,11 @@ namespace ASM1641_.Models
         [BsonRequired]
         public string Role { get; set; } = string.Empty;
 
-        [BsonElement("FirstName")]
-        [BsonRequired]
-        public string FirstName { get; set; } = string.Empty;
-
-        [BsonElement("LastName")]
-        [BsonRequired]
-        public string LastName { get; set; } = string.Empty;
-
-        [BsonElement("Address")]
-        public string Address { get; set; } = string.Empty;
-
-        [BsonElement("Phone")]
-        public string Phone { get; set; } = string.Empty;
-
         [BsonElement("Email")]
         public string Email { get; set; } = string.Empty;
 
         [BsonElement("PasswordHash")]
         public string PasswordHash { get; set; } = string.Empty;
-
-        [BsonElement("CartUser")]
-        public List<CartItems>? CartItems { get; set; }
     }
 }
 

@@ -58,9 +58,17 @@ namespace ASM1641_.Service
 
         public async Task CreateBook(Book aBook, IWebHostEnvironment hostingEnvironment)
         {
-            if (aBook == null)
+            //validate inputs
+            if (aBook == null ||
+                aBook.AuthorId == null ||
+                aBook.BookCategories == null ||
+                aBook.Title == null ||
+                aBook.Description == null ||
+                aBook.PublishDate == null ||
+                aBook.Price <= 0 ||
+                aBook.quantity <= 0)
             {
-                throw new ArgumentNullException(nameof(aBook), "The 'aBook' parameter cannot be null.");
+                throw new ArgumentNullException(nameof(aBook), "Invalid parameters");
             }
 
             if (aBook.Image == null)
@@ -104,6 +112,20 @@ namespace ASM1641_.Service
                 throw new ArgumentNullException(nameof(updatedBook), "The 'updatedBook' parameter cannot be null.");
             }
 
+            // Validate input properties
+            if (string.IsNullOrWhiteSpace(updatedBook.Title) ||
+                string.IsNullOrWhiteSpace(updatedBook.Publisher) ||
+                string.IsNullOrWhiteSpace(updatedBook.PublishDate) ||
+                string.IsNullOrWhiteSpace(updatedBook.AuthorId) ||
+                string.IsNullOrWhiteSpace(updatedBook.Description) ||
+                updatedBook.BookCategories == null ||
+                updatedBook.BookCategories.Count == 0 ||
+                updatedBook.Price <= 0 ||
+                updatedBook.Quantity <= 0)
+            {
+                throw new ArgumentException("Invalid input properties.");
+            }
+
             var bookFilter = Builders<Book>.Filter.Eq("Id", bookId);
             var book = await _bookCollection.Find(bookFilter).FirstOrDefaultAsync();
 
@@ -112,9 +134,9 @@ namespace ASM1641_.Service
                 throw new Exception("Book not found!");
             }
 
+            // Update the book's image if a new image is provided
             if (updatedBook.Image != null)
             {
-                // Update the book's image if a new image is provided
                 try
                 {
                     var uploadsPath = Path.Combine(hostingEnvironment.WebRootPath, "images");
@@ -132,6 +154,16 @@ namespace ASM1641_.Service
                         await updatedBook.Image.CopyToAsync(stream);
                     }
 
+                    // Delete the old image file, if it exists
+                    if (!string.IsNullOrEmpty(book.ImagePath))
+                    {
+                        var oldFilePath = Path.Combine(hostingEnvironment.WebRootPath, book.ImagePath.TrimStart('/'));
+                        if (File.Exists(oldFilePath))
+                        {
+                            File.Delete(oldFilePath);
+                        }
+                    }
+
                     book.ImagePath = "/images/" + uniqueFileName;
                 }
                 catch (Exception ex)
@@ -141,17 +173,17 @@ namespace ASM1641_.Service
             }
 
             // Update the book details
+            book.Title = updatedBook.Title;
+            book.AuthorId = updatedBook.AuthorId;
+            book.Description = updatedBook.Description;
+            book.Price = updatedBook.Price;
+            book.PublishDate = updatedBook.PublishDate;
+            book.Publisher = updatedBook.Publisher;
+            book.BookCategories = updatedBook.BookCategories;
+            book.quantity = updatedBook.Quantity;
+
             try
             {
-                book.Title = updatedBook.Title;
-                book.AuthorId = updatedBook.AuthorId;
-                book.Description = updatedBook.Description;
-                book.Price = updatedBook.Price;
-                book.PublishDate = updatedBook.PublishDate;
-                book.Publisher = book.Publisher;
-                book.BookCategories = updatedBook.BookCategories;
-                book.quantity = updatedBook.quantity;
-
                 await _bookCollection.ReplaceOneAsync(bookFilter, book);
             }
             catch (Exception ex)
@@ -159,6 +191,7 @@ namespace ASM1641_.Service
                 throw new Exception("An error occurred while updating the book: " + ex.Message);
             }
         }
+
 
 
         public async Task RemoveBook(string Id)

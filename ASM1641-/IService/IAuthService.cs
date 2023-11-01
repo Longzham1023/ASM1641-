@@ -8,5 +8,11 @@ namespace ASM1641_.IService
         Task CreateUserAsync(Customer request);
         Task<string> LoginAsync(UserDto request);
         Task<Customer> GetCurrentUser(string token);
+        Task CreateAdminAccount(AdminRegisterDto Admin);
+        Task<string> loginAdminAsync(UserDto request);
+        Task<string> loginStoreOwnerAsync(UserDto request);
+        Task ResetPasswordUser(ChangePasswordDto request);
+        Task ChangePasswordUser(string customerId, string password);
+        string GetIdByToken(string token);
     }
 }

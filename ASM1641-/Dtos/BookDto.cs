@@ -29,7 +29,7 @@ namespace ASM1641_.Dtos
 
         public IFormFile? Image { get; set; }
 
-        public int quantity { get; set; }
+        public int Quantity { get; set; }
     }
 }
 

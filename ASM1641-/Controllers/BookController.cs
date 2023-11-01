@@ -40,7 +40,7 @@ namespace ASM1641_.Controllers
         }
 
         // POST: api/book
-        [HttpPost, Authorize(Roles = "Admin")]
+        [HttpPost, Authorize(Roles = "StoreOwner")]
         public async Task<IActionResult> CreateBook([FromForm] Book book)
         {
             try
@@ -55,7 +55,7 @@ namespace ASM1641_.Controllers
         }
 
         // PUT: api/book/5
-        [HttpPut("{id}"), Authorize(Roles = "Admin")]
+        [HttpPut("{id}"), Authorize(Roles = "StoreOwner")]
         public async Task<IActionResult> UpdateBook(string id, [FromForm] BookDto book)
         {
             try
@@ -70,7 +70,7 @@ namespace ASM1641_.Controllers
         }
 
         // DELETE: api/book/5
-        [HttpDelete("{id}"), Authorize(Roles = "Admin")]
+        [HttpDelete("{id}"), Authorize(Roles = "StoreOwner")]
         public async Task<IActionResult> DeleteBook(string id)
         {
             try
@@ -85,7 +85,7 @@ namespace ASM1641_.Controllers
         }
 
         // PUT: api/book/addcategory
-        [HttpPut("addcategory"), Authorize(Roles = "Admin")]
+        [HttpPut("addcategory"), Authorize(Roles = "StoreOwner")]
         public async Task<IActionResult> AddCategoryToBook([FromForm] string bookId,[FromForm] string categoryId)
         {
             if (string.IsNullOrEmpty(bookId) || string.IsNullOrEmpty(categoryId))

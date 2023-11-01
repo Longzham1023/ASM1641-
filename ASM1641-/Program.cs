@@ -19,6 +19,7 @@ builder.Services.AddTransient<IPublisherService, PublisherService>();
 builder.Services.AddTransient<IAuthService, AuthService>();
 builder.Services.AddTransient<ICustomerService, CustomerService>();
 builder.Services.AddTransient<IOrderService, OrderService>();
+builder.Services.AddTransient<IAdminService, AdminService>();
 
 // use authenticate
 

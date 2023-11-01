@@ -13,6 +13,8 @@ namespace ASM1641_.Data
         public string? OrderCollection { get; set; }
         public string? OrderItemsCollection { get; set; }
         public string? CartCollection { get; set; }
+        public string? StoreOwnerCollection { get; set; }
+        public string? AdminCollection { get; set; }
     }
 }
 
