@@ -89,7 +89,7 @@ namespace ASM1641_.Controllers
         {
             try
             {
-                string token = HttpContext.Request.Headers["Authorization"].FirstOrDefault()?.Split(" ").Last();
+                string token = HttpContext.Request.Headers["Authorization"].FirstOrDefault()?.Split(" ").Last()!;
                 string customerID = _customerService.GetIdByToken(token);
                 var orders = await _orderService.GetOrdersByCustomerIdAsync(page, customerID);
                 return Ok(orders);

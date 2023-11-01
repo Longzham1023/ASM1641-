@@ -49,6 +49,8 @@ namespace ASM1641_.Service
 
             await _customerCollection.InsertOneAsync(request);
         }
+
+
         public async Task<string> LoginAsync(UserDto request)
         {
             var customersFilter = Builders<Customer>.Filter.Eq("Email", request.UserName);
@@ -118,7 +120,7 @@ namespace ASM1641_.Service
             {
                 new Claim(ClaimTypes.Name, aCustomer.FirstName),
                 new Claim(ClaimTypes.Email, aCustomer.Email),
-                new Claim("Id", aCustomer.Id),
+                new Claim("CustomerId", aCustomer.Id),
                 new Claim(ClaimTypes.Role, role)
             };
 

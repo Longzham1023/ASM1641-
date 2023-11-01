@@ -195,7 +195,7 @@ namespace ASM1641_.Service
             var principal = tokenHandler.ValidateToken(token, tokenValidationParemeters, out validatedToken);
 
 
-            var customerIdClaim = principal.FindFirst("customerId");
+            var customerIdClaim = principal.FindFirst("CustomerId");
             if (customerIdClaim != null)
             {
                 string customerId = customerIdClaim.Value;
